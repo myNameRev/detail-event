@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --dark-color: #575757;
+      --light-color: #A4B1BA;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url("bglog.jpg") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      width: 100%;
+      background-color: rgba(87, 87, 87, 0.8);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+    }
+
+    .user-profile {
+      color: white;
+      position: relative;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+    }
+
+    .user-profile i {
+      font-size: 22px;
+      vertical-align: middle;
+    }
+
+    .user-profile span {
+      margin: 0 8px;
+      font-weight: bold;
+    }
+
+    .dropdown-icon {
+      margin-left: 5px;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      background-color: white;
+      border: 1px solid var(--light-color);
+      border-radius: 8px;
+      min-width: 160px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 15px;
+      color: var(--dark-color);
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: var(--light-color);
+      color: white;
+    }
+
+    /* Form Styling */
+    .form-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 30px;
+      width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+    }
+
+    .form-container img.logo {
+      width: 150px;
+      margin-bottom: 10px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      outline: none;
+      transition: background 0.3s;
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    input:focus {
+      background: rgba(255,255,255,0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--dark-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      margin-top: 12px;
+    }
+
+    button:hover {
+      background-color: var(--light-color);
+    }
+
+    .link {
+      color: #fff;
+      cursor: pointer;
+      text-decoration: underline;
+      display: block;
+      margin-top: 15px;
+    }
+
+    .link:hover {
+      color: var(--light-color);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div class="user-profile" id="userProfile">
+    <i class="bi bi-person-circle"></i>
+    <span id="displayName"></span>
+    <i class="bi bi-caret-down-fill dropdown-icon" onclick="toggleDropdown()"></i>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="#">Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</div>
+
+<!-- Login Form -->
+<div class="form-container" id="loginContainer">
+  <img src="evotixFIX.png" class="logo" alt="Logo">
+  <h2>Login</h2>
+  <input type="text" id="loginUsername" placeholder="Username">
+  <input type="password" id="loginPassword" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <P>Belum punya akun? </P>
+  <span class="link" onclick="showRegister()">DAFTAR</span>
+</div>
+
+<!-- Register Form -->
+<div class="form-container" id="registerContainer" style="display: none;">
+  <img src="evotixFIX.png" class="logo" alt="Logo">
+  <h2>Register</h2>
+  <input type="text" id="registerUsername" placeholder="Username">
+  <input type="email" id="registerEmail" placeholder="Email">
+  <input type="password" id="registerPassword" placeholder="Password">
+  <input type="password" id="registerRetype" placeholder="Retype Password">
+  <button onclick="register()">Register</button>
+  <span class="link" onclick="showLogin()">Sudah punya akun? Login</span>
+</div>
+
+<script>
+  function showRegister() {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('registerContainer').style.display = 'block';
+  }
+
+  function showLogin() {
+    document.getElementById('loginContainer').style.display = 'block';
+    document.getElementById('registerContainer').style.display = 'none';
+  }
+
+  function register() {
+    const username = document.getElementById('registerUsername').value.trim();
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+    const retype = document.getElementById('registerRetype').value.trim();
+
+    if (!username || !email || !password || !retype) {
+      alert('Semua kolom harus diisi!');
+      return;
+    }
+
+    if (password !== retype) {
+      alert('Password tidak sama!');
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if (users[username]) {
+      alert('Username sudah terdaftar!');
+      return;
+    }
+
+    users[username] = { email: email, password: password };
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert('Registrasi berhasil! Silakan login.');
+    showLogin();
+  }
+
+  function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if (users[username] && users[username].password === password) {
+      document.getElementById('displayName').innerText = username;
+      document.getElementById('userProfile').style.display = 'flex';
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('registerContainer').style.display = 'none';
+
+      window.location.href='SMADA.html' //untuk halaman dashboard /halaman selanjutnya
+
+    } 
+    else {
+      alert('Username atau password salah!');
+    }
+  }
+
+  function toggleDropdown() {
+    const dropdown = document.getElementById('dropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-icon') && !event.target.matches('.bi-caret-down-fill')) {
+      const dropdown = document.getElementById('dropdownMenu');
+      if (dropdown && dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+      }
+    }
+  }
+
+  function logout() {
+    document.getElementById('userProfile').style.display = 'none';
+    document.getElementById('loginContainer').style.display = 'block';
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+  }
+</script>
+
+</body>
+</html>

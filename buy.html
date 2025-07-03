@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Pembelian Tiket Event</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="buying.css" />
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row">
+      <!-- Form Pembeli -->
+      <div class="col-md-8">
+        <h4 class="mb-4">Detail Pembeli</h4>
+        <div class="card p-4 mb-4">
+          <div class="mb-3">
+            <label for="buyer-name" class="form-label">Nama Pembeli</label>
+            <input type="text" class="form-control" id="buyer-name" placeholder="Masukkan nama pembeli">
+          </div>
+          <div class="mb-3">
+            <label for="buyer-email" class="form-label">Email Pembeli</label>
+            <input type="email" class="form-control" id="buyer-email" placeholder="Masukkan email pembeli">
+            <small class="form-text text-muted">E-Tiket akan dikirim ke email ini</small>
+          </div>
+        </div>
+
+        <!-- Jumlah Tiket -->
+        <h5>Jumlah Tiket</h5>
+        <div class="input-group mb-4" style="max-width: 200px;">
+          <button class="btn btn-outline-secondary" type="button" id="btn-decrease">-</button>
+          <input type="number" class="form-control text-center" id="ticket-amount" value="1" min="1">
+          <button class="btn btn-outline-secondary" type="button" id="btn-increase">+</button>
+        </div>
+
+        <!-- Form Pengunjung -->
+        <div id="visitor-forms"></div>
+      </div>
+
+      <!-- Ringkasan -->
+      <div class="col-md-4">
+        <div class="card p-4">
+          <h5>Detail Pesanan</h5>
+          <img id="event-image" src="logo_tiket.png" alt="Event Poster">
+          <h3 id="event-title"></h3>
+          <p id="event-date"></p>
+          <p id="event-location"></p>
+
+          <p><strong id="ticket-count">1</strong> Tiket Dipesan</p>
+
+          <div class="mb-3">
+            <label for="discount-code" class="form-label">Punya kode diskon?</label>
+            <input type="text" class="form-control" id="discount-code" placeholder="Contoh: DISKON10">
+            <div id="promo-message" class="form-text text-muted"></div>
+          </div>
+
+          <hr>
+          <p>Subtotal: <span id="subtotal">Rp 55.000</span></p>
+          <p>Total: <strong id="total">Rp 55.000</strong></p>
+
+          <a href="pembayaran.html" class="btn btn-dark w-100" id="to-payment">Pilih Metode Pembayaran</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ticketPrice = 55000;
+    const promoCodes = { "DISKON10": 0.10, "HEMAT20": 0.20, "EVENT70": 0.70 };
+    const ticketInput = document.getElementById('ticket-amount');
+    const visitorFormsContainer = document.getElementById('visitor-forms');
+
+    function applyDiscount(total) {
+      const code = document.getElementById('discount-code').value.trim().toUpperCase();
+      const discount = promoCodes[code] || 0;
+      const discountedTotal = total - (total * discount);
+      const promoMsg = document.getElementById('promo-message');
+      if (code && discount > 0) {
+        promoMsg.textContent = `Kode diskon diterapkan: ${code} (${discount * 100}%)`;
+        promoMsg.classList.remove('text-danger');
+        promoMsg.classList.add('text-success');
+      } else if (code) {
+        promoMsg.textContent = `Kode diskon tidak valid.`;
+        promoMsg.classList.remove('text-success');
+        promoMsg.classList.add('text-danger');
+      } else {
+        promoMsg.textContent = '';
+      }
+      return { discountedTotal, discountPercent: discount };
+    }
+
+    function updateTotal() {
+      const count = parseInt(ticketInput.value) || 1;
+      const rawTotal = count * ticketPrice;
+      const { discountedTotal, discountPercent } = applyDiscount(rawTotal);
+
+      document.getElementById('ticket-count').textContent = count;
+      document.getElementById('subtotal').textContent = `Rp ${rawTotal.toLocaleString('id-ID')}`;
+      if (discountPercent > 0) {
+        document.getElementById('total').innerHTML = `
+          <span class="text-muted text-decoration-line-through">Rp ${rawTotal.toLocaleString('id-ID')}</span>
+          <span class="text-success ms-2 fw-bold">Rp ${discountedTotal.toLocaleString('id-ID')}</span>
+        `;
+      } else {
+        document.getElementById('total').innerHTML = `Rp ${rawTotal.toLocaleString('id-ID')}`;
+      }
+    }
+
+    function createVisitorForm(index) {
+      return `
+        <div class="card p-3 mb-4">
+          <h6>Pengunjung ${index + 1}</h6>
+          ${index === 0 ? `
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="sameAsBuyer">
+            <label class="form-check-label" for="sameAsBuyer">Sama dengan detail pembeli</label>
+          </div>` : ''}
+          <div class="mb-3">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-control" id="visitor-name-${index}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="visitor-email-${index}">
+          </div>
+        </div>`;
+    }
+
+    function renderVisitorForms() {
+      const count = parseInt(ticketInput.value) || 1;
+      visitorFormsContainer.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        visitorFormsContainer.innerHTML += createVisitorForm(i);
+      }
+      const checkbox = document.getElementById('sameAsBuyer');
+      if (checkbox) {
+        checkbox.addEventListener('change', function () {
+          const name = document.getElementById('buyer-name').value;
+          const email = document.getElementById('buyer-email').value;
+          document.getElementById('visitor-name-0').value = this.checked ? name : '';
+          document.getElementById('visitor-email-0').value = this.checked ? email : '';
+        });
+      }
+    }
+
+    document.getElementById('btn-increase').addEventListener('click', () => {
+      ticketInput.value = parseInt(ticketInput.value) + 1;
+      updateTotal();
+      renderVisitorForms();
+    });
+
+    document.getElementById('btn-decrease').addEventListener('click', () => {
+      const value = parseInt(ticketInput.value);
+      if (value > 1) {
+        ticketInput.value = value - 1;
+        updateTotal();
+        renderVisitorForms();
+      }
+    });
+
+    ticketInput.addEventListener('input', () => {
+      updateTotal();
+      renderVisitorForms();
+    });
+
+    document.getElementById('discount-code').addEventListener('input', updateTotal);
+
+    const selectedEvent = JSON.parse(localStorage.getItem("selectedEvent"));
+    if (selectedEvent) {
+      document.getElementById("event-title").textContent = selectedEvent.title;
+      document.getElementById("event-date").textContent = selectedEvent.date;
+      document.getElementById("event-location").textContent = selectedEvent.location;
+      document.getElementById("event-image").src = selectedEvent.image;
+      ticketPrice = selectedEvent.price;
+    }
+
+    document.getElementById("to-payment").addEventListener("click", function () {
+      localStorage.setItem("buyerName", document.getElementById("buyer-name").value);
+      localStorage.setItem("buyerEmail", document.getElementById("buyer-email").value);
+      localStorage.setItem("ticketCount", ticketInput.value);
+      const { discountedTotal } = applyDiscount(parseInt(ticketInput.value) * ticketPrice);
+      localStorage.setItem("finalTotal", Math.round(discountedTotal));
+    });
+
+    updateTotal();
+    renderVisitorForms();
+  </script>
+</body>
+</html>

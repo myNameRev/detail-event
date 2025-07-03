@@ -1,0 +1,86 @@
+/* Warna utama */
+:root {
+  --primary: #A4B1BA;
+  --dark: #575757;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-container {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.logo img {
+  width: 120px;
+}
+
+h2 {
+  margin-bottom: 25px;
+  color: var(--dark);
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: var(--dark);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #444;
+}
+
+.footer-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+.footer-text a {
+  color: var(--dark);
+  text-decoration: none;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+}
